@@ -8,6 +8,7 @@ import OrderSummary from "@/components/OrderSummary";
 import { Card, CardFooter } from "@/components/ui/card";
 
 import { useState } from "react";
+import CheckoutButton from "@/components/CheckoutButton";
 
 export type CartItem = {
   _id: string;
@@ -19,6 +20,7 @@ export type CartItem = {
 const DetailPage = () => {
   const { storeId } = useParams();
   const { store, isLoading } = useGetStore(storeId);
+  const isCheckoutLoading = true;
 
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     const storedCartItems = sessionStorage.getItem(`cartItems-${storeId}`);
@@ -69,6 +71,24 @@ const DetailPage = () => {
     });
   };
 
+  const onCheckout = async () => {
+    if (!store) {
+      return;
+    }
+
+    const checkoutData = {
+      cartItems: cartItems.map((cartItem) => ({
+        productItemId: cartItem._id,
+        name: cartItem.name,
+        quantity: cartItem.quantity.toString(),
+      })),
+      storeId: store._id,
+      //   deliveryInformation:
+    };
+
+    console.log(checkoutData);
+  };
+
   if (isLoading || !store) {
     return <span>Loading ...</span>;
   }
@@ -101,6 +121,13 @@ const DetailPage = () => {
               cartItems={cartItems}
               removeFromCart={removeFromCart}
             />
+            <CardFooter>
+              <CheckoutButton
+                disabled={cartItems.length === 0}
+                onCheckout={onCheckout}
+                isLoading={isCheckoutLoading}
+              />
+            </CardFooter>
           </Card>
         </div>
       </div>

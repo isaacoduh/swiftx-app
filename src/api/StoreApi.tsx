@@ -5,6 +5,21 @@ import { useQuery } from "react-query";
 
 const API_BASE_URL = "http://localhost:7100";
 
+export const useGetStore = (storeId?: string) => {
+  const getStoreById = async (): Promise<Store> => {
+    const response = await fetch(`${API_BASE_URL}/api/v1/store/${storeId}`);
+    if (!response.ok) {
+      throw new Error("Failed to get store!");
+    }
+    return response.json();
+  };
+
+  const { data: store, isLoading } = useQuery("fetchStore", getStoreById, {
+    enabled: !!storeId,
+  });
+  return { store, isLoading };
+};
+
 export const useSearchStores = (searchState: SearchState, city?: string) => {
   const createSearchRequest = async (): Promise<StoreSearchResponse> => {
     const params = new URLSearchParams();

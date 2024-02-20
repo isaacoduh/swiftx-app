@@ -4,14 +4,69 @@ import StoreInfo from "@/components/StoreInfo";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import { useParams } from "react-router-dom";
 import { ProductItem as ProductItemType } from "@/types";
+import OrderSummary from "@/components/OrderSummary";
+import { Card, CardFooter } from "@/components/ui/card";
+
+import { useState } from "react";
+
+export type CartItem = {
+  _id: string;
+  name: string;
+  price: number;
+  quantity: number;
+};
 
 const DetailPage = () => {
   const { storeId } = useParams();
   const { store, isLoading } = useGetStore(storeId);
 
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    const storedCartItems = sessionStorage.getItem(`cartItems-${storeId}`);
+    return storedCartItems ? JSON.parse(storedCartItems) : [];
+  });
+
   const addToCart = (productItem: ProductItemType) => {
-    console.log(productItem._id);
-    console.log(productItem.price);
+    setCartItems((prevCartItems) => {
+      const existingCartItem = prevCartItems.find(
+        (cartItem) => cartItem._id === productItem._id
+      );
+      let updatedCartItems;
+      if (existingCartItem) {
+        updatedCartItems = prevCartItems.map((cartItem) =>
+          cartItem._id === productItem._id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      } else {
+        updatedCartItems = [
+          ...prevCartItems,
+          {
+            _id: productItem._id,
+            name: productItem.name,
+            price: productItem.price,
+            quantity: 1,
+          },
+        ];
+      }
+      sessionStorage.setItem(
+        `cartItems-${storeId}`,
+        JSON.stringify(updatedCartItems)
+      );
+      return updatedCartItems;
+    });
+  };
+
+  const removeFromCart = (cartItem: CartItem) => {
+    setCartItems((prevCartItems) => {
+      const updatedCartItems = prevCartItems.filter(
+        (item) => cartItem._id !== item._id
+      );
+      sessionStorage.setItem(
+        `cartItems-${storeId}`,
+        JSON.stringify(updatedCartItems)
+      );
+      return updatedCartItems;
+    });
   };
 
   if (isLoading || !store) {
@@ -38,6 +93,15 @@ const DetailPage = () => {
               addToCart={() => addToCart(productItem)}
             />
           ))}
+        </div>
+        <div>
+          <Card>
+            <OrderSummary
+              store={store}
+              cartItems={cartItems}
+              removeFromCart={removeFromCart}
+            />
+          </Card>
         </div>
       </div>
     </div>

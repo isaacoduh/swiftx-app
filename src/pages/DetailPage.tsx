@@ -9,6 +9,7 @@ import { Card, CardFooter } from "@/components/ui/card";
 
 import { useState } from "react";
 import CheckoutButton from "@/components/CheckoutButton";
+import { PaymentFormData } from "@/forms/payment-detail-form/PaymentDetailForm";
 
 export type CartItem = {
   _id: string;
@@ -71,7 +72,7 @@ const DetailPage = () => {
     });
   };
 
-  const onCheckout = async () => {
+  const onCheckout = async (paymentFormData: PaymentFormData) => {
     if (!store) {
       return;
     }
@@ -83,6 +84,13 @@ const DetailPage = () => {
         quantity: cartItem.quantity.toString(),
       })),
       storeId: store._id,
+      deliveryInformation: {
+        name: paymentFormData.name,
+        addressLine1: paymentFormData.addressLine1,
+        city: paymentFormData.city,
+        country: paymentFormData.country,
+        email: paymentFormData.email as string,
+      },
       //   deliveryInformation:
     };
 

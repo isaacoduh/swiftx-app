@@ -10,6 +10,7 @@ import { Card, CardFooter } from "@/components/ui/card";
 import { useState } from "react";
 import CheckoutButton from "@/components/CheckoutButton";
 import { PaymentFormData } from "@/forms/payment-detail-form/PaymentDetailForm";
+import { useCreateCheckoutSession } from "@/api/OrderApi";
 
 export type CartItem = {
   _id: string;
@@ -21,7 +22,8 @@ export type CartItem = {
 const DetailPage = () => {
   const { storeId } = useParams();
   const { store, isLoading } = useGetStore(storeId);
-  const isCheckoutLoading = true;
+  const { createCheckoutSession, isLoading: isCheckoutLoading } =
+    useCreateCheckoutSession();
 
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     const storedCartItems = sessionStorage.getItem(`cartItems-${storeId}`);
@@ -94,7 +96,8 @@ const DetailPage = () => {
       //   deliveryInformation:
     };
 
-    console.log(checkoutData);
+    const data = await createCheckoutSession(checkoutData);
+    window.location.href = data.url;
   };
 
   if (isLoading || !store) {

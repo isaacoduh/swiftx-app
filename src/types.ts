@@ -13,3 +13,30 @@ export type StoreSearchResponse = {
   data: Store[];
   pagination: { total: number; page: number; pages: number };
 };
+export type OrderStatus =
+  | "placed"
+  | "paid"
+  | "inProgress"
+  | "outForDelivery"
+  | "delivered";
+
+export type Order = {
+  _id: string;
+  store: Store;
+  // user:User;
+  cartItems: {
+    menuItemId: string;
+    name: string;
+    quantity: string;
+  }[];
+  deliveryInformation: {
+    name: string;
+    addressLine1: string;
+    city: string;
+    email: string;
+  };
+  totalAmount: number;
+  status: OrderStatus;
+  createdAt: string;
+  restaurantId: string;
+};

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Navbar from "./Navbar";
 
 const Header = () => {
   return (
@@ -11,7 +12,9 @@ const Header = () => {
           SwiftX Marketplace
         </Link>
         <div className="md:hidden">{/* <MobileNav /> */}</div>
-        <div className="hidden md:block">{/* <MainNav /> */}</div>
+        <div className="hidden md:block">
+          <Navbar />
+        </div>
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ import DetailPage from "./pages/DetailPage";
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
+import ProtectedRoute from "./auth/ProtectedRoute";
+import UserProfilePage from "./pages/UserProfilePage";
 
 const AppRoutes = () => {
   return (
@@ -34,6 +36,16 @@ const AppRoutes = () => {
         }
       />
       <Route path="*" element={<Navigate to="/" />} />
+      <Route element={<ProtectedRoute />}>
+        <Route
+          path="/user-profile"
+          element={
+            <Layout>
+              <UserProfilePage />
+            </Layout>
+          }
+        />
+      </Route>
     </Routes>
   );
 };

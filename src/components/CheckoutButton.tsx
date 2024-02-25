@@ -1,9 +1,15 @@
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import UserProfileForm, {
+  UserFormData,
+} from "@/forms/user-profile-form/UserProfileForm";
 import PaymentDetailForm, {
   PaymentFormData,
 } from "@/forms/payment-detail-form/PaymentDetailForm";
 import LoadingButton from "./LoadingButton";
+import { useGetAuthUser } from "@/api/AuthUserApi";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useLocation } from "react-router-dom";
 
 type Props = {
   onCheckout: (paymentFormData: PaymentFormData) => void;
@@ -12,13 +18,35 @@ type Props = {
 };
 
 const CheckoutButton = ({ onCheckout, disabled, isLoading }: Props) => {
-  const isGetInfoLoading = () => {
-    const payload = { status: true };
-    return payload;
+  const {
+    isAuthenticated,
+    isLoading: isAuthLoading,
+    loginWithRedirect,
+  } = useAuth0();
+  const { pathname } = useLocation();
+
+  const { currentUser, isLoading: isGetUserLoading } = useGetAuthUser();
+
+  const onLogin = async () => {
+    await loginWithRedirect({
+      appState: {
+        returnTo: pathname,
+      },
+    });
   };
-  //   if (isLoading) {
-  //     return <LoadingButton />;
-  //   }
+
+  if (!isAuthenticated) {
+    return (
+      <Button onClick={onLogin} className="bg-orange-500 flex-1">
+        Log in to check out
+      </Button>
+    );
+  }
+
+  if (isAuthLoading || !currentUser || isLoading) {
+    return <LoadingButton />;
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -27,11 +55,12 @@ const CheckoutButton = ({ onCheckout, disabled, isLoading }: Props) => {
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w[425px] md:min-w-[700px] bg-gray-50">
-        <PaymentDetailForm
+        <UserProfileForm
+          currentUser={currentUser}
           onSave={onCheckout}
-          //   isLoading="false"
-          title="Confirm Delievery Information"
-          buttonText="Continue to Payment"
+          isLoading={isGetUserLoading}
+          title="Confirm Deliery Details"
+          buttonText="Continue to payment"
         />
       </DialogContent>
     </Dialog>

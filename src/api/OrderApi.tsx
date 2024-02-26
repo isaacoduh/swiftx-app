@@ -5,6 +5,29 @@ import { toast } from "sonner";
 
 const API_BASE_URL = "http://localhost:7100";
 
+export const useGetMyOrders = () => {
+  const { getAccessTokenSilently } = useAuth0();
+  const getMyOrdersRequest = async (): Promise<Order[]> => {
+    const accessToken = await getAccessTokenSilently();
+    const response = await fetch(`${API_BASE_URL}/api/v1/order`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (!response.ok) {
+      throw new Error("failed to get orders");
+    }
+
+    return response.json();
+  };
+
+  const { data: orders, isLoading } = useQuery(
+    "fetchMyOrders",
+    getMyOrdersRequest,
+    { refetchInterval: 500 }
+  );
+
+  return { orders, isLoading };
+};
+
 type CheckoutSessionRequest = {
   cartItems: { productItemId: string; name: string; quantity: string }[];
   deliveryInformation: {

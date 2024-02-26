@@ -23,7 +23,7 @@ export type OrderStatus =
 export type Order = {
   _id: string;
   store: Store;
-  // user:User;
+  user: User;
   cartItems: {
     menuItemId: string;
     name: string;
@@ -38,7 +38,7 @@ export type Order = {
   totalAmount: number;
   status: OrderStatus;
   createdAt: string;
-  restaurantId: string;
+  storeId: string;
 };
 
 export type User = {

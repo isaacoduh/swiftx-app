@@ -1,7 +1,9 @@
 import {
   useCreateMyStore,
   useGetMyStore,
+  useGetMyStoreOrders,
   useUpdateMyStore,
+  useUpdateMyStoreOrder,
 } from "@/api/ManageRestaurantApi";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ManageStoreForm from "@/forms/manage-store-form/ManageStoreForm";
@@ -9,6 +11,8 @@ const ManageStorePage = () => {
   const { createStore, isLoading: isCreateLoading } = useCreateMyStore();
   const { store } = useGetMyStore();
   const { updateStore, isLoading: isUpdateLoading } = useUpdateMyStore();
+
+  const { orders } = useGetMyStoreOrders();
   // orders
   const isEditing = !!store;
   return (
@@ -21,7 +25,7 @@ const ManageStorePage = () => {
         value="orders"
         className="space-y-5 bg-gray-50 p-10 rounded-lg"
       >
-        <h2 className="text-2xl font-bold">5 active orders</h2>
+        <h2 className="text-2xl font-bold">{orders?.length} active orders</h2>
         {/* map orders */}
       </TabsContent>
       <TabsContent value="manage-store">
